@@ -1,0 +1,117 @@
+name: Heating element
+# Room temperature dps 2 and 3 are only reported once a room mode (comfort or
+# eco) has been used, so they are optional. 109 and 110 are read-only copies of
+# the comfort and eco setpoints; writes go to dp 2. 103 (string, "OFF") and
+# 105 (integer, 0) are unknown.
+products:
+  - id: nwx8db0yrjtvocel
+    manufacturer: iNOW
+    model: INOW PLUS
+entities:
+  - entity: climate
+    translation_only_key: heater
+    dps:
+      - id: 1
+        type: boolean
+        name: hvac_mode
+        mapping:
+          - dps_val: true
+            value: heat
+          - dps_val: false
+            value: "off"
+      - id: 3
+        type: integer
+        name: current_temperature
+        optional: true
+      - id: 4
+        type: string
+        name: preset_mode
+        mapping:
+          - dps_val: comfort
+            value: comfort
+          - dps_val: eco
+            value: eco
+          - dps_val: antifreezin
+            value: away
+          - dps_val: water_temp
+            value: radiator
+      # The target follows the mode: DP 2 is the active room setpoint (comfort
+      # or eco) and the only one that accepts writes; in radiator mode it's
+      # the element temperature.
+      - id: 2
+        type: integer
+        name: temperature
+        optional: true
+        unit: C
+        range:
+          min: 7
+          max: 70
+        mapping:
+          - step: 1
+            range:
+              min: 7
+              max: 30
+            constraint: preset_mode
+            conditions:
+              - dps_val: water_temp
+                value_redirect: radiator_temperature
+                step: 5
+                range:
+                  min: 30
+                  max: 70
+      # Read-only copies of the comfort and eco setpoints.
+      - id: 109
+        type: integer
+        name: comfort_temperature
+        readonly: true
+      - id: 110
+        type: integer
+        name: eco_temperature
+        readonly: true
+      - id: 102
+        type: integer
+        name: radiator_temperature
+        range:
+          min: 30
+          max: 70
+        mapping:
+          - step: 5
+  - entity: sensor
+    name: Element temperature
+    class: temperature
+    dps:
+      - id: 101
+        type: integer
+        name: sensor
+        unit: C
+        class: measurement
+  - entity: select
+    name: Boost
+    translation_key: timer
+    dps:
+      - id: 19
+        type: string
+        name: option
+        mapping:
+          - dps_val: "0h"
+            value: cancel
+          - dps_val: "2h"
+            value: "2h"
+          - dps_val: "4h"
+            value: "4h"
+  - entity: switch
+    name: Schedule
+    icon: "mdi:home-clock-outline"
+    category: config
+    dps:
+      # Turning the schedule on also switches the element on.
+      - id: 104
+        type: boolean
+        name: switch
+  - entity: lock
+    translation_key: child_lock
+    category: config
+    dps:
+      - id: 108
+        type: boolean
+        name: lock

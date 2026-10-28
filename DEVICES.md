@@ -54,7 +54,7 @@
 - Imaxfire AWA2 water vapour fireplace
 - In-Ring-R radiator thermostat
 - InkbirdPlus HT2024 space heater
-- INOW Wi-Fi heating element (single and dual air/water temperature control variants)
+- INOW Wi-Fi heating element (single and dual air/water temperature control variants, and INOW PLUS)
 - Juskys OH125BW2 oil radiator
 - Kennedy II/JR electric fireplace
 - Kesser Infrared 400W wall and 3000W heaters with and without lights.
